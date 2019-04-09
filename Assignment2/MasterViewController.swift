@@ -8,11 +8,37 @@
 
 import UIKit
 
-class MasterViewController: UITableViewController {
+
+protocol detailCancel {
+    func cancel()
+}
+class MasterViewController: UITableViewController, detailCancel {
+    
+    
+    
+    func cancel() {
+        
+        if bool == true{
+            objects.removeLast()
+        }
+        bool = false
+        
+        _ = navigationController?.popViewController(animated: true)
+    }
+    
+    
+
+    
+    func detailViewControllerDidUpdate(_ detailViewController: DetailViewController) {
+        // Update/reloading data
+        tableView.reloadData()
+    }
 
     var detailViewController: DetailViewController? = nil
-    var objects = [Any]()
+    var objects = [Location]()
+    var bool: Bool = false
 
+    var indexPath: IndexPath?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,26 +56,43 @@ class MasterViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
+        tableView.reloadData()
+
     }
 
     @objc
     func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
-        let indexPath = IndexPath(row: 0, section: 0)
+        let indexPath = IndexPath(row: objects.count, section: 0)
+        objects.append(Location(name: "", address: "", long: 0, lat: 0))
         tableView.insertRows(at: [indexPath], with: .automatic)
+        self.indexPath = indexPath
+        bool = true
+        performSegue(withIdentifier: "showDetail", sender: indexPath)
     }
 
     // MARK: - Segues
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
-            if let indexPath = tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
-                let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
-                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-                controller.navigationItem.leftItemsSupplementBackButton = true
+            let indexPath: IndexPath
+            if let path = tableView.indexPathForSelectedRow {
+                indexPath = path
+                bool = false
             }
+            else {
+                guard let path = sender as? IndexPath
+                    else {
+                        fatalError()
+                }
+                indexPath = path
+            }
+            self.indexPath = indexPath
+            let object = objects[indexPath.row]
+            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+            controller.detailItem = object
+            controller.delegate = self
+            controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+            controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }
 
@@ -65,9 +108,8 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
+        let object = objects[indexPath.row]
+        cell.textLabel!.text = object.name
         return cell
     }
 
@@ -85,6 +127,18 @@ class MasterViewController: UITableViewController {
         }
     }
 
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let move =  objects[sourceIndexPath.item]
+        objects.remove(at: sourceIndexPath.item)
+        objects.insert(move, at: destinationIndexPath.item)
+        
+        
+        //
+        
+        
+    }
+
 
 }
+
 
