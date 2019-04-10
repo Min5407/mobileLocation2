@@ -118,6 +118,7 @@
                         <outlet property="latTextField" destination="qZE-vb-k53" id="Wra-41-AUO"/>
                         <outlet property="longTextField" destination="eCm-Xq-PXm" id="qZC-bY-Mnr"/>
                         <outlet property="nameTextField" destination="VB4-p1-ylf" id="eNA-n1-kgT"/>
+                        <outlet property="scrollView" destination="kD6-3f-xA0" id="r94-Kg-Ahp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>

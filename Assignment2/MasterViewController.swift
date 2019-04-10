@@ -11,6 +11,7 @@ import UIKit
 
 protocol detailCancel {
     func cancel()
+    func reload()
 }
 class MasterViewController: UITableViewController, detailCancel {
     
@@ -23,9 +24,15 @@ class MasterViewController: UITableViewController, detailCancel {
         }
         bool = false
         
+        self.tableView.reloadData()
+
         _ = navigationController?.popViewController(animated: true)
+        
     }
     
+    func reload(){
+        self.tableView.reloadData()
+    }
     
 
     
@@ -42,9 +49,13 @@ class MasterViewController: UITableViewController, detailCancel {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
         navigationItem.leftBarButtonItem = editButtonItem
-
+        if let split = splitViewController{
+            split.preferredDisplayMode = .allVisible
+        }
+        
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
         navigationItem.rightBarButtonItem = addButton
         if let split = splitViewController {
